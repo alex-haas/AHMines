@@ -1,0 +1,3 @@
+[submodule "AHMines"]
+	path = ahmines
+	url = https://github.com/gravitor/AHMines.git
