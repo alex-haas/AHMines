@@ -9,6 +9,9 @@ var MINES = {};
 	MINES.onLose = function(){alert("you lose!");};
 	MINES.onWin = function(){alert("gratulations! you win!");};
 
+	// public attributes
+	MINES.assistLevel = 0;	// default deactivated
+
 	// public methods
   MINES.init = function(cols,rows,mines){
   	MINES.mMap = new MMap(cols,rows,mines);
@@ -46,6 +49,7 @@ var MINES = {};
 			if(this.isOpened || this.isFlagged) return false;
 			this.isOpened = true;
 			this.refreshMinesAround();
+			this.refreshFlaggedAround();
 			
 			if(this.isMine){
 				MINES.onLose();
@@ -154,10 +158,25 @@ var MINES = {};
 			}
 		};
 		map.flagField = function(x,y){
+			if(!map.started) return;
 			var mField = map.fields[y][x];
 			if(mField.isOpened) return;
 			mField.isFlagged = !mField.isFlagged;
 			MINES.onFlagFieldListener(mField);
+
+			if(MINES.assistLevel >= 1){
+				var triggeredFields = new Array();
+				for(var i=mField.neighbors.length-1; i>=0; --i){
+					var f = mField.neighbors[i];
+					if(f.isOpened){
+						f.refreshFlaggedAround();
+						if(mField.flaggedAround === mField.minesAround){
+							triggeredFields = triggeredFields.concat(f.getChainTriggeredFields());
+						}
+					}
+				}
+				if(triggeredFields.length>0) map.openFields(triggeredFields);
+			}
 		};
 		map.openMinesAroundOpenField = function(x,y){
 			var mField = map.fields[y][x];
