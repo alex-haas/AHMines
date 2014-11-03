@@ -46,6 +46,7 @@ var MINES = {};
 		field.isFlagged = false;
 		field.minesAround = 0;
 		field.flaggedAround = 0;
+		field.closedAround = 0;
 		field.neighbors = new Array();
 
 		field.open = function(){
@@ -72,6 +73,26 @@ var MINES = {};
 					} 
 				}
 			}
+
+			if(MINES.assistLevel >= 2){
+				this.refreshClosedAround();
+				var ownClosed = [], sharedClosed = [], otherClosed = [];
+				for(var i=this.neighbors.length-1; i>=0; --i){
+					var f = this.neighbors[i];
+					if(f.isOpened || f.isFlagged || chainTriggered.indexOf(f) != -1) continue;	// not opened, not flagged, not already triggered
+					f.refreshClosedAround();
+					this.splitClosedFields(f, ownClosed, sharedClosed, otherClosed);
+					if(sharedClosed.length - (f.closedAround - f.minesAround) === this.minesAround){
+						chainTriggered = chainTriggered.concat(ownClosed);
+					}
+					if(MINES.assistLevel >= 3){
+						//if(diff === this.minesAround){
+						//	MINES.mMap.flagField(ownFields);
+						//}
+					}
+				}
+			}
+
 			return chainTriggered;
 		};
 		field.refreshMinesAround = function(){
@@ -87,6 +108,39 @@ var MINES = {};
 				if(this.neighbors[i].isFlagged) ++count;
 			}
 			this.flaggedAround = count;
+		};
+		field.refreshClosedAround = function(){
+			var count = 0;
+			for(var i=this.neighbors.length-1; i>=0; --i){
+				if(!this.neighbors[i].isOpened) ++count;
+			}
+			this.closedAround = count;
+		};
+		field.splitClosedFields = function(otherField, ownClosed, sharedClosed, otherClosed){
+			while (sharedClosed.length) sharedClosed.pop();	// clear
+			while (otherClosed.length)  otherClosed.pop();	// clear
+
+			// get own closed fields
+			if(ownClosed.length !== 0){
+				for(var i=this.neighbors.length-1; i>=0; --i){
+					if(!this.neighbors[i].isOpened){
+						ownClosed.push(this.neighbors[i]);
+					}
+				}
+			}
+
+			var f;
+			for(var i=otherField.neighbors.length-1; i>=0; --i){
+				f = otherField.neighbors[i];
+				if(!f.isOpened){
+					otherClosed.push(f);
+					for(var j=this.neighbors.length-1; j>=0; --j){
+						if(this.neighbors[j] === f){
+							sharedClosed.push(f);
+						}
+					}
+				}
+			}
 		};
 
 		return field;
