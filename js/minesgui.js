@@ -8,9 +8,14 @@
   	MINES.minescontainer.innerHTML = renderHTML();
   	MINES.onOpenFieldListener = onOpenFieldListener;
   	MINES.onFlagFieldListener = onFlagFieldListener;
+  	MINES.onLose = onLose;
+		MINES.onWin = onWin;
 
   	window.setTimeout(setOnFieldClickListener, 0);
   };
+
+  var onLose = function(){alert("you lose!");};
+	var onWin = function(){alert("gratulations! you win!");};
 
   var onFlagFieldListener = function(fieldToFlag){
   	var div = getFieldOnPosition(fieldToFlag.x, fieldToFlag.y);

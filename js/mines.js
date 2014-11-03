@@ -6,8 +6,11 @@ var MINES = {};
   // Callbacks with stubs
   MINES.onOpenFieldListener = function(fieldsToOpen, fieldsToOpenNext){};
   MINES.onFlagFieldListener = function(fieldToFlag){};
-	MINES.onLose = function(){alert("you lose!");};
-	MINES.onWin = function(){alert("gratulations! you win!");};
+	MINES.onLose = function(){};
+	MINES.onWin = function(){};
+	MINES.onReset = function(){};
+	MINES.onMinesDecreased = function(minesLeft){};
+	MINES.onTimePassed = function(secondsPassed){};
 
 	// public attributes
 	MINES.assistLevel = 0;	// default deactivated
