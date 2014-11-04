@@ -3,6 +3,12 @@ var MINES = {};
 (function () {
   'use strict';
 
+  Array.prototype.diff = function(a) {
+    return this.filter(function(i) {
+    	return a.indexOf(i) < 0;
+    });
+	};
+
   // Callbacks with stubs
   MINES.onOpenFieldListener = function(fieldsToOpen, fieldsToOpenNext){};
   MINES.onFlagFieldListener = function(fieldToFlag){};
@@ -79,11 +85,16 @@ var MINES = {};
 				var ownClosed = [], sharedClosed = [], otherClosed = [];
 				for(var i=this.neighbors.length-1; i>=0; --i){
 					var f = this.neighbors[i];
-					if(f.isOpened || f.isFlagged || chainTriggered.indexOf(f) != -1) continue;	// not opened, not flagged, not already triggered
+					if(!f.isOpened || ( f.x !== this.x && f.y !== this.y ) ) continue;	// not opened 
 					f.refreshClosedAround();
 					this.splitClosedFields(f, ownClosed, sharedClosed, otherClosed);
-					if(sharedClosed.length - (f.closedAround - f.minesAround) === this.minesAround){
-						chainTriggered = chainTriggered.concat(ownClosed);
+
+
+					var ownFree = (ownClosed.length - this.minesAround);
+					var sharedMines = (ownFree - sharedClosed.length) * -1;
+					if(sharedMines  == f.minesAround){
+						var othersOnly = otherClosed.diff(sharedClosed);
+						chainTriggered = chainTriggered.concat(othersOnly);
 					}
 					if(MINES.assistLevel >= 3){
 						//if(diff === this.minesAround){
@@ -93,7 +104,12 @@ var MINES = {};
 				}
 			}
 
-			return chainTriggered;
+			var uniqueFields = [];
+			$.each(chainTriggered, function(i, el){
+			    if($.inArray(el, uniqueFields) === -1) uniqueFields.push(el);
+			});
+
+			return uniqueFields;
 		};
 		field.refreshMinesAround = function(){
 			var count = 0;
