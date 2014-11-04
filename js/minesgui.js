@@ -24,6 +24,22 @@
   };
 
   var renderHTML = function(){
+    var htmlControls = renderHTMLControls();
+    var htmlFields = renderHTMLFields();
+    return htmlControls + htmlFields;
+  }
+
+  var renderHTMLControls = function(){
+    var maxLevel = 5;
+    var htmlcontrols = '<select id="assist-level-selector"';
+    for(var i=0; i<=maxLevel; ++i){
+      htmlcontrols += '<option value="' + i + '">' + i + '</option>';
+    }
+    htmlcontrols += '</select>';
+    return htmlcontrols;
+  }
+
+  var renderHTMLFields = function(){
 		var rows = MINES.mMap.rows;
 		var cols = MINES.mMap.cols;
 
