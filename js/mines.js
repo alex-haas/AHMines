@@ -90,18 +90,19 @@ var MINES = {};
 				for(var i=this.neighbors.length-1; i>=0; --i){
 					var f = this.neighbors[i];
 					if(!f.isOpened || ( f.x !== this.x && f.y !== this.y ) ) continue;	// not opened 
+					if(f.minesAround === 0 || this.minesAround === 0) continue;
 					f.refreshClosedAround();
 					f.refreshMinesAround();
 					this.splitClosedFields(f, ownClosed, sharedClosed, otherClosed);
 
 
-					var ownFree = (ownClosed.length - this.minesAround);
+					var ownFree = (this.closedAround - this.minesAround);
 					var sharedMines = (ownFree - sharedClosed.length) * -1;
 					if(sharedMines  === f.minesAround){
 						var othersOnly = otherClosed.diff(sharedClosed);
 
 						if(othersOnly.length > 0){
-							alert("this: "+this.toString()+"\nother: "+f.toString());
+							//alert("this: "+this.toString()+"\nother: "+f.toString()+"\nsharedLength:"+sharedClosed.length);
 						}
 						chainTriggered = chainTriggered.concat(othersOnly);
 					}
