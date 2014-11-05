@@ -1,4 +1,4 @@
 AHMines
 =======
 
-A extendable MinesWeeper clone.
+An extendable MineSweeper clone.
