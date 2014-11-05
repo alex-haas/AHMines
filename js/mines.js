@@ -15,8 +15,7 @@ var MINES = {};
   MINES.onLose = function(){};
   MINES.onWin = function(){};
   MINES.onReset = function(){};
-  MINES.onMinesDecreased = function(minesLeft){};
-  MINES.onTimePassed = function(secondsPassed){};
+  MINES.onFlagAmountChanged = function(flagsLeft){};
 
   // public attributes
   MINES.assistLevel = 0;  // default deactivated
@@ -26,7 +25,7 @@ var MINES = {};
     MINES.mMap = new MMap(cols,rows,mines);
   };
   MINES.reset = function(){
-    MINES.init(MINES.mMmap.cols, MINES.mMmap.rows, MINES.mMmap.mines);
+    MINES.init(MINES.mMap.cols, MINES.mMap.rows, MINES.mMap.mines);
   };
   MINES.clickedAtField = function(x,y){
     MINES.mMap.clickedAtField(x,y);
@@ -41,6 +40,9 @@ var MINES = {};
   MINES.openFields = function(fieldsToOpen){
     MINES.mMap.openFields(fieldsToOpen);
   };
+  MINES.secondsPassed = function(){
+  	return MINES.mMap.secondsPassed();
+  }
 
 ///// MField Implementation ///////////////////////////////////////////////////////////////////////////////////////////
   var MField = function(x,y){
@@ -171,6 +173,8 @@ var MINES = {};
     map.mines = mines;
     map.fields = new Array();
     map.started = false;
+    map.flagsLeft = mines;
+    map.startTime = 0;
 
     // Create all Fields
     for(var y=0; y<rows; y++){
@@ -201,6 +205,7 @@ var MINES = {};
 
       if(!map.started){
         map.started = true;
+        map.startTime = new Date();
         map.generateMinesAround(x,y);
       }
 
@@ -242,6 +247,9 @@ var MINES = {};
       if(mField.isOpened) return;
       mField.isFlagged = !mField.isFlagged;
       MINES.onFlagFieldListener(mField);
+      if(mField.isFlagged) --map.flagsLeft;
+      else ++map.flagsLeft;
+      MINES.onFlagAmountChanged(map.flagsLeft);
 
       if(MINES.assistLevel >= 1){
         var triggeredFields = new Array();
@@ -268,6 +276,12 @@ var MINES = {};
         map.openFields(fieldsToOpen);
       }
     };
+    map.secondsPassed = function(){
+    	if(map.startTime === 0) return 0;
+
+    	var secondsPassed = (new Date).getSeconds() - map.startTime.getSeconds();
+    	return secondsPassed;
+    }
 
     return map;
   };

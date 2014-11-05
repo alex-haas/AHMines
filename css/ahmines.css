@@ -1,3 +1,9 @@
+.controls{
+  background-color: #daa520;
+  padding: 10px;
+  margin: 1px;
+}
+
 .mfield {
   width: 32px;
   height: 32px;
@@ -49,5 +55,33 @@
 }
 .mfield.mflag {
   background: url(../images/minesprites.png) -288px 0;
+  background-color: #6699FF;
   background-size: cover;
 }
+
+.mmineicon {
+  background: url(../images/minesprites.png) -144px 0;
+  background-size: cover;
+  width: 16px;
+  height: 16px;
+  float: left;
+}
+.miconlabel {
+  float:left;
+}
+
+.mtimeicon {
+  background: url(../images/minesprites.png) -160px 0;
+  background-size: cover;
+  width: 16px;
+  height: 16px;
+  float: left;
+}
+
+.spacer {
+  float:left;
+  width: 30px;
+  height: 10px;
+}
+
+

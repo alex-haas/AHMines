@@ -10,12 +10,35 @@
   	MINES.onFlagFieldListener = onFlagFieldListener;
   	MINES.onLose = onLose;
 		MINES.onWin = onWin;
+		MINES.onFlagAmountChanged = onFlagAmountChanged;
 
   	window.setTimeout(setOnFieldClickListener, 0);
+  	window.setTimeout(setControlListener, 0);
+  	window.setTimeout(timerUpdate, 0);
   };
 
-  var onLose = function(){alert("you lose!");};
-	var onWin = function(){alert("gratulations! you win!");};
+  var timerUpdate = function(){
+  	var secondsPassed = MINES.secondsPassed();
+
+  	var seconds = secondsPassed % 60;
+		var minutes = Math.floor(secondsPassed / 60);
+		var secondsStr = seconds < 10 ? '0'+seconds : seconds;
+		$('#mtime-counter').html(minutes + ':' + secondsStr);
+
+  	setTimeout(timerUpdate, 1000);
+  }
+
+  var onLose = function(){
+  	alert("you lose!");
+  };
+	
+	var onWin = function(){
+		alert("gratulations! you win!");
+	};
+
+	var onFlagAmountChanged = function(flagsLeft){
+		$('#mmine-counter').html(flagsLeft);
+	};
 
   var onFlagFieldListener = function(fieldToFlag){
   	var div = getFieldOnPosition(fieldToFlag.x, fieldToFlag.y);
@@ -27,17 +50,47 @@
     var htmlControls = renderHTMLControls();
     var htmlFields = renderHTMLFields();
     return htmlControls + htmlFields;
-  }
+  };
+
+  var setControlListener = function(){
+  	$("#assist-level-selector").change(setChangeAssistLevelListener);
+  };
+
+  var setChangeAssistLevelListener = function(){
+  	var newSelectedLevel = parseFloat($("#assist-level-selector option:selected").attr('value'));
+  	MINES.assistLevel = newSelectedLevel;
+  };
 
   var renderHTMLControls = function(){
-    var maxLevel = 5;
-    var htmlcontrols = '<select id="assist-level-selector"';
+    var html = '<div class="controls">';
+
+    html += renderHTMLControlLevelSelector();
+    html += '<div class="spacer"></div>';
+    html += renderHTMLTimeCounter();
+    html += '<div class="spacer"></div>';
+    html += renderHTMLMineCounter();
+
+    html += '<div style="clear:both"></div></div>';
+    return html;
+  };
+
+  var renderHTMLMineCounter = function(){
+  	return '<div class="mmineicon"></div><div id="mmine-counter" class="miconlabel">99</div>';
+  };
+
+  var renderHTMLTimeCounter = function(){
+  	return '<div class="mtimeicon"></div><div id="mtime-counter" class="miconlabel">0:00</div>';
+  };
+
+  var renderHTMLControlLevelSelector = function(){
+  	var maxLevel = 5;
+    var html = '<select id="assist-level-selector" style="float:left">';
     for(var i=0; i<=maxLevel; ++i){
-      htmlcontrols += '<option value="' + i + '">' + i + '</option>';
+      html += '<option value="' + i + '"'+(i===maxLevel?' selected':'')+'>Assist Level ' + i + '</option>';
     }
-    htmlcontrols += '</select>';
-    return htmlcontrols;
-  }
+    html += '</select>';
+    return html;
+  };
 
   var renderHTMLFields = function(){
 		var rows = MINES.mMap.rows;
