@@ -96,7 +96,7 @@
 		var rows = MINES.mMap.rows;
 		var cols = MINES.mMap.cols;
 
-		var htmlmap = "";
+		var htmlmap = '<div class="mmap">';
 		var i=0;
 		for(var y=0; y<rows; y++){
 			htmlmap += '<div id="' + y + '" class="mrow">';
@@ -105,6 +105,7 @@
 			}
 			htmlmap += '</div><div style="clear:both"></div>';
 		}
+		htmlmap += '</div>';
 		return htmlmap;
 	};
 
