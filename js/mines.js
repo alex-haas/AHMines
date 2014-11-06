@@ -205,7 +205,7 @@ var MINES = {};
 
       if(!map.started){
         map.started = true;
-        map.startTime = new Date();
+        map.startTime = (new Date).getTime();
         map.generateMinesAround(x,y);
       }
 
@@ -279,8 +279,8 @@ var MINES = {};
     map.secondsPassed = function(){
     	if(map.startTime === 0) return 0;
 
-    	var secondsPassed = (new Date).getSeconds() - map.startTime.getSeconds();
-    	return secondsPassed;
+    	var milliPassed = (new Date).getTime() - map.startTime;
+    	return Math.floor(milliPassed / 1000);
     }
 
     return map;
