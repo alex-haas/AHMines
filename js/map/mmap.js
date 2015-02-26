@@ -18,12 +18,15 @@ define function(['mcell'], MCell){
   }
 
   MMap.prototype.constructor = function(cols,rows,mines){
+    if(rows<=0 || cols<=0) throw "rows or cols zero or negative";
+    if(cols*rows-9 < mines) throw "too many mines";
+
     this.rows = rows;
     this.cols = cols;
     this.mines = mines;
     this.flagsLeft = mines;
 
-    // Create all Fields
+    // Create all Cells
     for(var y=0; y<rows; y++){
       var row = new Array();
       for(var x=0; x<cols; x++){
