@@ -1,5 +1,6 @@
-define function(['mcell'], MCell){
-
+define(['mcell'], function(MCell){
+  'use strict';
+  
   Array.prototype.diff = function(a) {
     return this.filter(function(i) {
       return a.indexOf(i) < 0;
@@ -7,13 +8,20 @@ define function(['mcell'], MCell){
   };
 
   var MMap = {
+    /* callbacks */
+    callbacks: {
+      openFields: function(cellsToOpen, TriggeredCells){},
+      fieldFlagged: function(field){},
+      flagAmountChanged: function(newAmount){}
+    },
+
+    /* attributes */
     rows: 0,
     cols: 0,
     mines: 0,
     cells: [],
     started: false,
     flagsLeft: 0,
-    startTime: 0,
     lost: false
   }
 
@@ -61,7 +69,7 @@ define function(['mcell'], MCell){
     var cell = this.cells[y][x];
     if(cell.open()){
       var triggeredFields = cell.getChainTriggeredFields();
-      MINES.onOpenFieldListener([cell], triggeredFields);
+      this.callbacks.openFields([cell], triggeredFields);
     }
   };
 
@@ -76,7 +84,7 @@ define function(['mcell'], MCell){
         if($.inArray(el, uniqueFields) === -1) uniqueFields.push(el);
     });
     
-    MINES.onOpenFieldListener(cellsToOpen,uniqueFields);
+    this.callbacks.openFields(cellsToOpen,uniqueFields);
   };
 
   MMap.prototype.generateMinesAround = function(x,y){
@@ -99,10 +107,10 @@ define function(['mcell'], MCell){
     var mField = map.cells[y][x];
     if(mField.isOpened) return;
     mField.isFlagged = !mField.isFlagged;
-    MINES.onFlagFieldListener(mField);
+    this.callbacks.fieldFlagged(mField);
     if(mField.isFlagged) --map.flagsLeft;
     else ++map.flagsLeft;
-    MINES.onFlagAmountChanged(map.flagsLeft);
+    this.callbacks.flagAmountChanged(map.flagsLeft);
 
     if(MINES.assistLevel >= 1){
       var triggeredFields = new Array();
@@ -139,4 +147,4 @@ define function(['mcell'], MCell){
   }
 
   return MMap;
-}
+});

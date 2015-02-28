@@ -1,9 +1,14 @@
-(function () {
+define(['globals'], function (Globals) {
   'use strict';
 
-  MINES.fillMinesContainer = function(){
-  	var container = $("#minesweeper-container");
-  	if(container.length < 1) return;
+  var MGUI = {};
+
+  MGUI.prototype.fillMinesContainer = function(){
+  	var container = document.getElementById('minesweeper-container');
+  	if(!container) {
+  		throw 'container doesnt exist';
+  	}
+
   	MINES.minescontainer = container[0];
   	MINES.minescontainer.innerHTML = renderHTML();
   	MINES.onOpenFieldListener = onOpenFieldListener;
@@ -15,18 +20,32 @@
   	window.setTimeout(setOnFieldClickListener, 0);
   	window.setTimeout(setControlListener, 0);
   	window.setTimeout(timerUpdate, 0);
-  };
-
-  var timerUpdate = function(){
-  	var secondsPassed = MINES.secondsPassed();
-
-  	var seconds = secondsPassed % 60;
-		var minutes = Math.floor(secondsPassed / 60);
-		var secondsStr = seconds < 10 ? '0'+seconds : seconds;
-		$('#mtime-counter').html(minutes + ':' + secondsStr);
-
-  	setTimeout(timerUpdate, 1000);
   }
+
+  MGUI.prototype.clientCallbackListener = {
+  	onOpenFieldListener: function(fieldsToOpen, fieldsToOpenNext){
+
+  	},
+    onFlagFieldListener: function(fieldToFlag){
+
+    },
+    onLose: function(){
+
+    },
+    onWin: function(){
+
+    },
+    onReset: function(){
+
+    },
+    onFlagAmountChanged: function(flagsLeft){
+    	
+    },
+  }
+
+  return MGUI;
+
+  
 
   var onLose = function(){
   	alert("you lose!");
@@ -168,4 +187,16 @@
 		jFields.dblclick(onDoubleClickListener);
 	};
 
-})();
+	// TODO: needs to be started in an other function
+	var timerUpdate = function(){
+  	var secondsPassed = MINES.secondsPassed();
+
+  	var seconds = secondsPassed % 60;
+		var minutes = Math.floor(secondsPassed / 60);
+		var secondsStr = seconds < 10 ? '0'+seconds : seconds;
+		$('#mtime-counter').html(minutes + ':' + secondsStr);
+
+  	setTimeout(timerUpdate, 1000);
+  }
+
+});

@@ -1,5 +1,6 @@
-define function(){
-
+define(function(){
+  'use strict';
+  
   var MCell = {
     x: 0,
     y: 0,
@@ -132,4 +133,4 @@ define function(){
   };
 
   return MCell;
-}
+});
