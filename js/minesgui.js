@@ -90,15 +90,13 @@ define(['globals'], function (Globals) {
     onFlagAmountChanged: function(flagsLeft){
     	// TODO: getting the elements should ne done in an init method
     	document.getElementById('mmine-counter').innerHTML = flagsLeft;
-    },
+    }
   }
-
-  return MGUI;
 
   /** HTML Controls **/
 
   MGUI.prototype.setControlListener = function(){
-  	$("#assist-level-selector").change(setChangeAssistLevelListener);
+  	$("#assist-level-selector").change(this.setChangeAssistLevelListener);
   };
 
   MGUI.prototype.setChangeAssistLevelListener = function(){
@@ -173,7 +171,8 @@ define(['globals'], function (Globals) {
 		var secondsStr = seconds < 10 ? '0'+seconds : seconds;
 		$('#mtime-counter').html(minutes + ':' + secondsStr);
 
-  	setTimeout(timerUpdate, 1000);
+  	setTimeout(this.timerUpdate, 1000);
   }
 
+  return MGUI;
 });

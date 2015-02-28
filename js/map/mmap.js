@@ -91,12 +91,12 @@ define(['map/mcell'], function(MCell){
 
   MMap.prototype.generateMinesAround = function(x,y){
     var col, row;
-    var numberOfMinesToGenerate = map.mines;
+    var numberOfMinesToGenerate = this.mines;
     while(numberOfMinesToGenerate > 0){
-      row = Math.floor(Math.random()*map.rows);
-      col = Math.floor(Math.random()*map.cols);
+      row = Math.floor(Math.random()*this.rows);
+      col = Math.floor(Math.random()*this.cols);
       if(row >= y-1 && row <= y+1 && col >= x-1 && col <= x+1) continue;
-      var field = map.cells[row][col];
+      var field = this.cells[row][col];
       if(!field.isMine){
         field.isMine = true;
         --numberOfMinesToGenerate;
@@ -105,14 +105,14 @@ define(['map/mcell'], function(MCell){
   };
 
   MMap.prototype.flagField = function(x,y){
-    if(!map.started) return;
-    var mField = map.cells[y][x];
+    if(!this.started) return;
+    var mField = this.cells[y][x];
     if(mField.isOpened) return;
     mField.isFlagged = !mField.isFlagged;
     this.callbacks.fieldFlagged(mField);
-    if(mField.isFlagged) --map.flagsLeft;
-    else ++map.flagsLeft;
-    this.callbacks.flagAmountChanged(map.flagsLeft);
+    if(mField.isFlagged) --this.flagsLeft;
+    else ++this.flagsLeft;
+    this.callbacks.flagAmountChanged(this.flagsLeft);
 
     if(MINES.assistLevel >= 1){
       var triggeredFields = new Array();
@@ -125,26 +125,26 @@ define(['map/mcell'], function(MCell){
           }
         }
       }
-      if(triggeredFields.length>0) map.openFields(triggeredFields);
+      if(triggeredFields.length>0) this.openFields(triggeredFields);
     }
   };
 
   MMap.prototype.openMinesAroundOpenField = function(x,y){
-    var mField = map.cells[y][x];
+    var mField = this.cells[y][x];
     if(!mField.isOpened) return;
 
     mField.refreshFlaggedAround();    
     if(mField.flaggedAround === mField.minesAround){
       // Open them all
       var cellsToOpen = mField.getChainTriggeredFields();
-      map.openFields(cellsToOpen);
+      this.openFields(cellsToOpen);
     }
   };
 
   MMap.prototype.secondsPassed = function(){
-  	if(map.startTime === 0) return 0;
+  	if(this.startTime === 0) return 0;
 
-  	var milliPassed = (new Date).getTime() - map.startTime;
+  	var milliPassed = (new Date).getTime() - this.startTime;
   	return Math.floor(milliPassed / 1000);
   }
 

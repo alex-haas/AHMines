@@ -7,8 +7,6 @@ requirejs.config({
 });
 
 define(['globals','localminesclient','minesgui'], function(Globals, LocalMinesClient, MinesGUI) {
-  console.log("loading completed");
-
   Globals.currentClient = new LocalMinesClient;
   Globals.gui = new MinesGUI;
 

@@ -40,7 +40,7 @@ define(['minesclient','map/mmap'], function(MinesClient, MMap){
   };
 
   LocalMinesClient.prototype.secondsPassed = function(){
-  	return MINES.mMap.secondsPassed();
+  	return this.mMap.secondsPassed();
   }
 
   return LocalMinesClient;
