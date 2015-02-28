@@ -9,14 +9,15 @@ requirejs.config({
 define(['globals','localminesclient','minesgui'], function(Globals, LocalMinesClient, MinesGUI) {
   console.log("loading completed");
 
-  Globals.setClient(LocalMinesClient);
-
+  Globals.currentClient = new LocalMinesClient;
+  Globals.gui = new MinesGUI;
 
   var cols = 30;
   var rows = 16;
   var mines = 99;
 
-  LocalMinesClient.init(cols,rows,mines);
-  LocalMinesClient.assistLevel = 999;
-  MinesGUI.fillMinesContainer();
+  Globals.currentClient.init(cols,rows,mines);
+  Globals.currentClient.assistLevel = 999;
+  
+  Globals.gui.init();
 });

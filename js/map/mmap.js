@@ -1,4 +1,4 @@
-define(['mcell'], function(MCell){
+define(['map/mcell'], function(MCell){
   'use strict';
   
   Array.prototype.diff = function(a) {
@@ -7,25 +7,7 @@ define(['mcell'], function(MCell){
     });
   };
 
-  var MMap = {
-    /* callbacks */
-    callbacks: {
-      openFields: function(cellsToOpen, TriggeredCells){},
-      fieldFlagged: function(field){},
-      flagAmountChanged: function(newAmount){}
-    },
-
-    /* attributes */
-    rows: 0,
-    cols: 0,
-    mines: 0,
-    cells: [],
-    started: false,
-    flagsLeft: 0,
-    lost: false
-  }
-
-  MMap.prototype.constructor = function(cols,rows,mines){
+  var MMap = function(cols,rows,mines){
     if(rows<=0 || cols<=0) throw "rows or cols zero or negative";
     if(cols*rows-9 < mines) throw "too many mines";
 
@@ -57,6 +39,26 @@ define(['mcell'], function(MCell){
       } 
     }
   }
+
+  MMap.prototype = {
+    /* callbacks */
+    callbacks: {
+      openFields: function(cellsToOpen, TriggeredCells){},
+      fieldFlagged: function(field){},
+      flagAmountChanged: function(newAmount){}
+    },
+
+    /* attributes */
+    rows: 0,
+    cols: 0,
+    mines: 0,
+    cells: [],
+    started: false,
+    flagsLeft: 0,
+    lost: false
+  }
+
+  MMap.prototype.constructor = MMap;
 
   // Methods
   MMap.prototype.clickedAtField = function(x,y){

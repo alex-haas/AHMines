@@ -5,15 +5,14 @@
 define(['minesclient','map/mmap'], function(MinesClient, MMap){
 	'use strict';
 	
-  var LocalMinesClient = {
-  	mMap: null
-  };
-
+  var LocalMinesClient = function(){};
+  
   LocalMinesClient.prototype = Object.create(MinesClient.prototype);
-  LocalMinesClient.prototype.constructor = function(){};
+  LocalMinesClient.prototype.constructor = LocalMinesClient;
+  LocalMinesClient.prototype.mMap = null;   // TODO: is there a better solution for attributes?
 
   LocalMinesClient.prototype.init = function(cols,rows,mines){
-  	this.prototype.prototype.init(cols,rows,mines);
+  	this.__proto__.__proto__.init(cols,rows,mines);
     this.mMap = new MMap(cols,rows,mines);
   };
 

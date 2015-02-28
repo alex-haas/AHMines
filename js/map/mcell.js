@@ -1,7 +1,12 @@
 define(function(){
   'use strict';
   
-  var MCell = {
+  var MCell = function(x,y){
+    this.x = x;
+    this.y = y;
+  };
+
+  MCell.prototype = {
     x: 0,
     y: 0,
     isMine: false,
@@ -11,12 +16,7 @@ define(function(){
     flaggedAround: 0,
     closedAround: 0,
     neighbors: []
-  };
-
-  MCell.prototype.constructor = function(x,y){
-    this.x = x;
-    this.y = y;
-  };
+  }
 
   MCell.prototype.toString = function(){
     return "[Cell x:"+this.x+" y:"+this.y+" minesAround:"+this.minesAround+" closedAround:"+this.closedAround+"]";
