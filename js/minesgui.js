@@ -123,9 +123,11 @@ define(['globals'], function (Globals) {
 			else div.addClass('m' + mField.minesAround);
 		}
 
-		window.setTimeout(function(){
-			Globals.currentClient.openFields(fieldsToOpenNext);
-		},200);
+    if(fieldsToOpenNext.length > 0){
+      window.setTimeout(function(){
+        Globals.currentClient.openFields(fieldsToOpenNext);
+      },200);
+    }
 	};
 
 	MGUI.prototype.onFieldClickListener = function(event){
