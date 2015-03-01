@@ -1,4 +1,4 @@
-define(['map/mcell'], function(MCell){
+define(['map/mcell','globals'], function(MCell, Globals){
   'use strict';
   
   Array.prototype.diff = function(a) {
@@ -62,14 +62,19 @@ define(['map/mcell'], function(MCell){
 
   // Methods
   MMap.prototype.clickedAtField = function(x,y){
+    console.log('MMap: clicked at x:'+x+' y:'+y);
+
     if(!this.started){
       this.started = true;
       this.startTime = (new Date).getTime();
       this.generateMinesAround(x,y);
+      // TODO: this.callbacks.gameStarted
     }
 
     var cell = this.cells[y][x];
     if(cell.open()){
+      console.log('field is open -> get triggered fields and delegate to gui');
+      console.log(this.callbacks);
       var triggeredFields = cell.getChainTriggeredFields();
       this.callbacks.openFields([cell], triggeredFields);
     }
@@ -114,7 +119,7 @@ define(['map/mcell'], function(MCell){
     else ++this.flagsLeft;
     this.callbacks.flagAmountChanged(this.flagsLeft);
 
-    if(MINES.assistLevel >= 1){
+    if(Globals.currentClient.assistLevel >= 1){
       var triggeredFields = new Array();
       for(var i=mField.neighbors.length-1; i>=0; --i){
         var f = mField.neighbors[i];

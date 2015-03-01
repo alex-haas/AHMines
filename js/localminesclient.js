@@ -14,12 +14,27 @@ define(['minesclient','map/mmap'], function(MinesClient, MMap){
   LocalMinesClient.prototype.init = function(cols,rows,mines){
   	this.__proto__.__proto__.init(cols,rows,mines);
     this.mMap = new MMap(cols,rows,mines);
+    this.mMap.callbacks = this.mMapCallbacks;
   };
 
   LocalMinesClient.prototype.reset = function(){
   	// TODO: test later
   	this.mMap = new MMap(this.mMap.cols, this.mMap.rows, this.mMap.mines);
     //this.init();
+  };
+
+  LocalMinesClient.prototype.mMapCallbacks = {
+    openFields: function(cellsToOpen, TriggeredCells){
+      console.log('LocalMinesClient: opening fields!');
+      console.log(this);
+      this.callbacks.onOpenFieldListener(cellsToOpen, TriggeredCells);
+    },
+    fieldFlagged: function(field){
+      this.callbacks.onFlagFieldListener(field);
+    },
+    flagAmountChanged: function(newAmount){
+      this.callbacks.onFlagAmountChanged(newAmount);
+    }
   };
 
   LocalMinesClient.prototype.clickedAtField = function(x,y){

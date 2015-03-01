@@ -1,4 +1,4 @@
-define(function(){
+define(['globals'], function(Globals){
   'use strict';
   
   var MCell = function(x,y){
@@ -15,7 +15,10 @@ define(function(){
     minesAround: 0,
     flaggedAround: 0,
     closedAround: 0,
-    neighbors: []
+    neighbors: [],
+    callbacks: {
+      clickedOnMine: function(x,y){}
+    }
   }
 
   MCell.prototype.toString = function(){
@@ -29,10 +32,7 @@ define(function(){
     this.refreshFlaggedAround();
     
     if(this.isMine){
-      if(!MINES.mMap.lost){
-        MINES.onLose();
-      }
-      MINES.mMap.lost = true;
+      this.callbacks.clickedOnMine();
     }
 
     return true;
@@ -51,7 +51,7 @@ define(function(){
       }
     }
 
-    if(MINES.assistLevel >= 2){
+    if(Globals.currentClient.assistLevel >= 2){
       this.refreshClosedAround();
       var ownClosed = [], sharedClosed = [], otherClosed = [];
       for(var i=this.neighbors.length-1; i>=0; --i){
@@ -70,7 +70,7 @@ define(function(){
         if(sharedMinesByOther === this.minesAround){
           chainTriggered = chainTriggered.concat(ownClosed.diff(sharedClosed));
         }
-        if(MINES.assistLevel >= 3){
+        if(Globals.currentClient.assistLevel >= 3){
           //if(diff === this.minesAround){
           //  MINES.mMap.flagField(ownFields);
           //}

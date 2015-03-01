@@ -12,9 +12,9 @@ define(['globals'], function (Globals) {
   	}
   	this.minescontainer.innerHTML = this.renderHTML();
 
-  	window.setTimeout(this.setOnFieldClickListener, 0);
-  	window.setTimeout(this.setControlListener, 0);
-  	window.setTimeout(this.timerUpdate, 0);
+  	window.setTimeout(this.setOnFieldClickListener.bind(this), 0);
+  	window.setTimeout(this.setControlListener.bind(this), 0);
+  	window.setTimeout(this.timerUpdate.bind(this), 0);
   }
 
   MGUI.prototype.constructor = MGUI;
@@ -71,23 +71,28 @@ define(['globals'], function (Globals) {
 
   MGUI.prototype.clientCallbackListener = {
   	onOpenFieldListener: function(fieldsToOpen, fieldsToOpenNext){
+      console.log('fields got opened');
   		var div = getFieldOnPosition(fieldToFlag.x, fieldToFlag.y);
 	  	if(fieldToFlag.isFlagged) div.addClass("mflag");
 	  	else div.removeClass("mflag");
   	},
     onFlagFieldListener: function(fieldToFlag){
-
+      console.log('field got flagged'+fieldToFlag);
     },
     onLose: function(){
+      console.log('player lost');
     	alert("you lose!");
     },
     onWin: function(){
+      console.log('player won');
     	alert("gratulations! you win!");
     },
     onReset: function(){
-
+      console.log('reset was executed');
     },
     onFlagAmountChanged: function(flagsLeft){
+      console.log('amount of flags changed to: '+flagsLeft);
+
     	// TODO: getting the elements should ne done in an init method
     	document.getElementById('mmine-counter').innerHTML = flagsLeft;
     }
@@ -128,6 +133,8 @@ define(['globals'], function (Globals) {
 		var button = event.target;
 		var mFieldX = parseInt(button.getAttribute("mfieldx"));
 		var mFieldY = parseInt(button.getAttribute("mfieldy"));
+
+    console.log('GUI: left click on Cell[X:'+mFieldX+', Y:'+mFieldY+']');
 		Globals.currentClient.clickedAtField(mFieldX,mFieldY);
 	};
 
@@ -137,6 +144,8 @@ define(['globals'], function (Globals) {
 		var button = event.target;
 		var mFieldX = parseInt(button.getAttribute("mfieldx"));
 		var mFieldY = parseInt(button.getAttribute("mfieldy"));
+
+    console.log('GUI: right click on Cell[X:'+mFieldX+', Y:'+mFieldY+']');
 		Globals.currentClient.flagField(mFieldX,mFieldY);
 	};
 
