@@ -41,11 +41,11 @@ define(['map/mcell','globals'], function(MCell, Globals){
   }
 
   MMap.prototype = {
-    /* callbacks */
-    callbacks: {
-      openFields: function(cellsToOpen, TriggeredCells){},
-      fieldFlagged: function(field){},
-      flagAmountChanged: function(newAmount){}
+    /* delegate */
+    delegate: {
+      MMapOpenFields: function(cellsToOpen, TriggeredCells){},
+      MMapFieldFlagged: function(field){},
+      MMapFlagAmountChanged: function(newAmount){}
     },
 
     /* attributes */
@@ -62,21 +62,17 @@ define(['map/mcell','globals'], function(MCell, Globals){
 
   // Methods
   MMap.prototype.clickedAtField = function(x,y){
-    console.log('MMap: clicked at x:'+x+' y:'+y);
-
     if(!this.started){
       this.started = true;
       this.startTime = (new Date).getTime();
       this.generateMinesAround(x,y);
-      // TODO: this.callbacks.gameStarted
+      // TODO: this.delegate.gameStarted
     }
 
     var cell = this.cells[y][x];
     if(cell.open()){
-      console.log('field is open -> get triggered fields and delegate to gui');
-      console.log(this.callbacks);
       var triggeredFields = cell.getChainTriggeredFields();
-      this.callbacks.openFields([cell], triggeredFields);
+      this.delegate.MMapOpenFields([cell], triggeredFields);
     }
   };
 
@@ -91,7 +87,7 @@ define(['map/mcell','globals'], function(MCell, Globals){
         if($.inArray(el, uniqueFields) === -1) uniqueFields.push(el);
     });
     
-    this.callbacks.openFields(cellsToOpen,uniqueFields);
+    this.delegate.MMapOpenFields(cellsToOpen,uniqueFields);
   };
 
   MMap.prototype.generateMinesAround = function(x,y){
@@ -114,10 +110,10 @@ define(['map/mcell','globals'], function(MCell, Globals){
     var mField = this.cells[y][x];
     if(mField.isOpened) return;
     mField.isFlagged = !mField.isFlagged;
-    this.callbacks.fieldFlagged(mField);
+    this.delegate.MMapFieldFlagged(mField);
     if(mField.isFlagged) --this.flagsLeft;
     else ++this.flagsLeft;
-    this.callbacks.flagAmountChanged(this.flagsLeft);
+    this.delegate.MMapFlagAmountChanged(this.flagsLeft);
 
     if(Globals.currentClient.assistLevel >= 1){
       var triggeredFields = new Array();

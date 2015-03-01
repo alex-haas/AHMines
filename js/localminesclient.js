@@ -14,46 +14,38 @@ define(['minesclient','map/mmap'], function(MinesClient, MMap){
   LocalMinesClient.prototype.init = function(cols,rows,mines){
   	this.__proto__.__proto__.init(cols,rows,mines);
     this.mMap = new MMap(cols,rows,mines);
-    this.mMap.callbacks = this.mMapCallbacks;
+    this.mMap.delegate = this;
   };
-
   LocalMinesClient.prototype.reset = function(){
   	// TODO: test later
   	this.mMap = new MMap(this.mMap.cols, this.mMap.rows, this.mMap.mines);
     //this.init();
   };
 
-  LocalMinesClient.prototype.mMapCallbacks = {
-    openFields: function(cellsToOpen, TriggeredCells){
-      console.log('LocalMinesClient: opening fields!');
-      console.log(this);
-      this.callbacks.onOpenFieldListener(cellsToOpen, TriggeredCells);
-    },
-    fieldFlagged: function(field){
-      this.callbacks.onFlagFieldListener(field);
-    },
-    flagAmountChanged: function(newAmount){
-      this.callbacks.onFlagAmountChanged(newAmount);
-    }
-  };
+  /** MapDelegate **/
+  LocalMinesClient.prototype.MMapOpenFields = function(cellsToOpen, TriggeredCells){
+    this.delegate.onOpenFieldListener(cellsToOpen, TriggeredCells);
+  },
+  LocalMinesClient.prototype.MMapFieldFlagged = function(field){
+    this.delegate.onFlagFieldListener(field);
+  },
+  LocalMinesClient.prototype.MMapFlagAmountChanged = function(newAmount){
+    this.delegate.onFlagAmountChanged(newAmount);
+  }
 
   LocalMinesClient.prototype.clickedAtField = function(x,y){
     this.mMap.clickedAtField(x,y);
   };
-
   LocalMinesClient.prototype.flagField = function(x,y){
     this.mMap.flagField(x,y);
   };
-
   LocalMinesClient.prototype.openMinesAroundOpenField = function(x,y){
     this.mMap.openMinesAroundOpenField(x,y);
   };
-
   // Call when the fieldsToOpenNext array has a length above 0
   LocalMinesClient.prototype.openFields = function(fieldsToOpen){
     this.mMap.openFields(fieldsToOpen);
   };
-
   LocalMinesClient.prototype.secondsPassed = function(){
   	return this.mMap.secondsPassed();
   }

@@ -15,7 +15,7 @@ define(['globals','localminesclient','minesgui'], function(Globals, LocalMinesCl
   var mines = 99;
 
   Globals.currentClient.init(cols,rows,mines);
-  Globals.currentClient.assistLevel = 999;
+  Globals.currentClient.assistLevel = 0;
   
   Globals.gui.init();
 });

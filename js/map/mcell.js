@@ -16,7 +16,7 @@ define(['globals'], function(Globals){
     flaggedAround: 0,
     closedAround: 0,
     neighbors: [],
-    callbacks: {
+    delegate: {
       clickedOnMine: function(x,y){}
     }
   }
@@ -32,7 +32,7 @@ define(['globals'], function(Globals){
     this.refreshFlaggedAround();
     
     if(this.isMine){
-      this.callbacks.clickedOnMine();
+      this.delegate.clickedOnMine();
     }
 
     return true;

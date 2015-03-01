@@ -4,7 +4,7 @@ define(['globals'], function (Globals) {
   var MGUI = function(){};
 
   MGUI.prototype.init = function(){
-    Globals.currentClient.callbacks = this.clientCallbackListener;
+    Globals.currentClient.delegate = this;
 
   	this.minescontainer = document.getElementById('minesweeper-container');
   	if(!this.minescontainer) {
@@ -69,34 +69,33 @@ define(['globals'], function (Globals) {
 
 	/** Client Callbacks **/
 
-  MGUI.prototype.clientCallbackListener = {
-  	onOpenFieldListener: function(fieldsToOpen, fieldsToOpenNext){
+  	MGUI.prototype.onOpenFieldListener = function(fieldsToOpen, fieldsToOpenNext){
       console.log('fields got opened');
-  		var div = getFieldOnPosition(fieldToFlag.x, fieldToFlag.y);
+  		var div = this.getFieldOnPosition(fieldToFlag.x, fieldToFlag.y);
 	  	if(fieldToFlag.isFlagged) div.addClass("mflag");
 	  	else div.removeClass("mflag");
-  	},
-    onFlagFieldListener: function(fieldToFlag){
+  	};
+    MGUI.prototype.onFlagFieldListener = function(fieldToFlag){
       console.log('field got flagged'+fieldToFlag);
-    },
-    onLose: function(){
+    };
+    MGUI.prototype.onLose = function(){
       console.log('player lost');
     	alert("you lose!");
-    },
-    onWin: function(){
+    };
+    MGUI.prototype.onWin = function(){
       console.log('player won');
     	alert("gratulations! you win!");
-    },
-    onReset: function(){
+    };
+    MGUI.prototype.onReset = function(){
       console.log('reset was executed');
-    },
-    onFlagAmountChanged: function(flagsLeft){
+    };
+    MGUI.prototype.onFlagAmountChanged = function(flagsLeft){
       console.log('amount of flags changed to: '+flagsLeft);
 
     	// TODO: getting the elements should ne done in an init method
     	document.getElementById('mmine-counter').innerHTML = flagsLeft;
-    }
-  }
+    };
+  
 
   /** HTML Controls **/
 
@@ -117,7 +116,7 @@ define(['globals'], function (Globals) {
 	MGUI.prototype.onOpenFieldListener = function(fieldsToOpen, fieldsToOpenNext){
 		for(var i=fieldsToOpen.length-1; i>=0; --i){
 			var mField = fieldsToOpen[i];
-			var div = getFieldOnPosition(mField.x, mField.y);
+			var div = this.getFieldOnPosition(mField.x, mField.y);
 			div.addClass('mopen');
 			if(mField.isMine) div.addClass("mmine");
 			else if(mField.isFlag) alert("shouldn't be called here oO");
