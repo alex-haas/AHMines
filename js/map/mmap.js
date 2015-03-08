@@ -18,7 +18,7 @@ define(['map/mcell','globals'], function(MCell, Globals){
 
     // Create all Cells
     for(var y=0; y<rows; y++){
-      var row = new Array();
+      var row = [];
       for(var x=0; x<cols; x++){
         row.push(new MCell(x,y));
       }

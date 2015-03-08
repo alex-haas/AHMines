@@ -22,33 +22,52 @@ define(['minesclient','map/mmap'], function(MinesClient, MMap){
     //this.init();
   };
 
-  /** MapDelegate **/
-  LocalMinesClient.prototype.MMapOpenFields = function(cellsToOpen, TriggeredCells){
-    this.delegate.onOpenFieldListener(cellsToOpen, TriggeredCells);
-  },
-  LocalMinesClient.prototype.MMapFieldFlagged = function(field){
-    this.delegate.onFlagFieldListener(field);
-  },
-  LocalMinesClient.prototype.MMapFlagAmountChanged = function(newAmount){
-    this.delegate.onFlagAmountChanged(newAmount);
-  }
+  var MMapDelegateFunctions = (function(){
+    function MMapOpenFields(cellsToOpen, TriggeredCells) {
+      this.delegate.onOpenFieldListener(cellsToOpen, TriggeredCells);
+    }
+    function MMapFieldFlagged(field) {
+      this.delegate.onFlagFieldListener(field);
+    }
+    function MMapFlagAmountChanged(newAmount) {
+      this.delegate.onFlagAmountChanged(newAmount);
+    }
+    return function(){
+      this.MMapOpenFields = MMapOpenFields;
+      this.MMapFieldFlagged = MMapFieldFlagged;
+      this.MMapFlagAmountChanged = MMapFlagAmountChanged;
+      return this;
+    }
+  })();
 
-  LocalMinesClient.prototype.clickedAtField = function(x,y){
-    this.mMap.clickedAtField(x,y);
-  };
-  LocalMinesClient.prototype.flagField = function(x,y){
-    this.mMap.flagField(x,y);
-  };
-  LocalMinesClient.prototype.openMinesAroundOpenField = function(x,y){
-    this.mMap.openMinesAroundOpenField(x,y);
-  };
-  // Call when the fieldsToOpenNext array has a length above 0
-  LocalMinesClient.prototype.openFields = function(fieldsToOpen){
-    this.mMap.openFields(fieldsToOpen);
-  };
-  LocalMinesClient.prototype.secondsPassed = function(){
-  	return this.mMap.secondsPassed();
-  }
+  var GUIActionFunctions = (function(){
+    function clickedAtField(x,y) {
+      this.mMap.clickedAtField(x,y);
+    }
+    function flagField(x,y) {
+      this.mMap.flagField(x,y);
+    }
+    function openMinesAroundOpenField(x,y) {
+      this.mMap.openMinesAroundOpenField(x,y);
+    }
+    function openFields(fieldsToOpen) {
+      this.mMap.openFields(fieldsToOpen);
+    }
+    function secondsPassed() {
+      return this.mMap.secondsPassed();
+    }
+    return function(){
+      this.clickedAtField = clickedAtField;
+      this.flagField = flagField;
+      this.openMinesAroundOpenField = openMinesAroundOpenField;
+      this.openFields = openFields;
+      this.secondsPassed = secondsPassed;
+      return this;
+    }
+  })();
+
+  MMapDelegateFunctions.call(LocalMinesClient.prototype);
+  GUIActionFunctions.call(LocalMinesClient.prototype);
 
   return LocalMinesClient;
 });
