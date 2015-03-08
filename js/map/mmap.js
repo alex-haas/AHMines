@@ -55,100 +55,101 @@ define(['map/mcell','globals'], function(MCell, Globals){
     cells: [],
     started: false,
     flagsLeft: 0,
-    lost: false,
-    startTime: 0
+    lost: false
   }
 
   MMap.prototype.constructor = MMap;
 
-  // Methods
-  MMap.prototype.clickedAtField = function(x,y){
-    if(!this.started){
-      this.started = true;
-      this.startTime = (new Date).getTime();
-      this.generateMinesAround(x,y);
-      // TODO: this.delegate.gameStarted
-    }
-
-    var cell = this.cells[y][x];
-    if(cell.open()){
-      var triggeredFields = cell.getChainTriggeredFields();
-      this.delegate.MMapOpenFields([cell], triggeredFields);
-    }
-  };
-
-  MMap.prototype.openFields = function(cellsToOpen){
-    var triggeredFields = [];
-    for(var i=cellsToOpen.length-1; i>=0; --i){
-      cellsToOpen[i].open();
-      triggeredFields = triggeredFields.concat(cellsToOpen[i].getChainTriggeredFields());
-    }
-    var uniqueFields = [];
-    $.each(triggeredFields, function(i, el){
-        if($.inArray(el, uniqueFields) === -1) uniqueFields.push(el);
-    });
-    
-    this.delegate.MMapOpenFields(cellsToOpen,uniqueFields);
-  };
-
-  MMap.prototype.generateMinesAround = function(x,y){
-    var col, row;
-    var numberOfMinesToGenerate = this.mines;
-    while(numberOfMinesToGenerate > 0){
-      row = Math.floor(Math.random()*this.rows);
-      col = Math.floor(Math.random()*this.cols);
-      if(row >= y-1 && row <= y+1 && col >= x-1 && col <= x+1) continue;
-      var field = this.cells[row][col];
-      if(!field.isMine){
-        field.isMine = true;
-        --numberOfMinesToGenerate;
-      }
-    }
-  };
-
-  MMap.prototype.flagField = function(x,y){
-    if(!this.started) return;
-    var mField = this.cells[y][x];
-    if(mField.isOpened) return;
-    mField.isFlagged = !mField.isFlagged;
-    this.delegate.MMapFieldFlagged(mField);
-    if(mField.isFlagged) --this.flagsLeft;
-    else ++this.flagsLeft;
-    this.delegate.MMapFlagAmountChanged(this.flagsLeft);
-
-    if(Globals.currentClient.assistLevel >= 1){
-      var triggeredFields = new Array();
-      for(var i=mField.neighbors.length-1; i>=0; --i){
-        var f = mField.neighbors[i];
-        if(f.isOpened){
-          f.refreshFlaggedAround();
-          if(mField.flaggedAround === mField.minesAround){
-            triggeredFields = triggeredFields.concat(f.getChainTriggeredFields());
-          }
+  var MClientInterfaceMethods = (function(){
+    /** Helper **/
+    function generateMinesAround(field, mmap) {
+      var x=field.x, y=field.y, col, row, f;
+      var numberOfMinesToGenerate = mmap.mines;
+      while(numberOfMinesToGenerate > 0){
+        row = Math.floor(Math.random()*mmap.rows);
+        col = Math.floor(Math.random()*mmap.cols);
+        if(row >= y-1 && row <= y+1 && col >= x-1 && col <= x+1) continue;
+        f = mmap.cells[row][col];
+        if(!f.isMine){
+          f.isMine = true;
+          --numberOfMinesToGenerate;
         }
       }
-      if(triggeredFields.length>0) this.openFields(triggeredFields);
     }
-  };
 
-  MMap.prototype.openMinesAroundOpenField = function(x,y){
-    var mField = this.cells[y][x];
-    if(!mField.isOpened) return;
+    /** PUBLIC **/
+    function openField(field) {
+      if(!this.started){
+        this.started = true;
+        this.startTime = (new Date).getTime();
+        generateMinesAround(field,this);
+        // TODO: this.delegate.gameStarted
+      }
 
-    mField.refreshFlaggedAround();    
-    if(mField.flaggedAround === mField.minesAround){
-      // Open them all
-      var cellsToOpen = mField.getChainTriggeredFields();
-      this.openFields(cellsToOpen);
+      if(field.open()){
+        var triggeredFields = field.getChainTriggeredFields();
+        this.delegate.MMapOpenFields([field], triggeredFields);
+      }
     }
-  };
+    function openFields(cellsToOpen) {
+      var triggeredFields = [];
+      for(var i=cellsToOpen.length-1; i>=0; --i){
+        cellsToOpen[i].open();
+        triggeredFields = triggeredFields.concat(cellsToOpen[i].getChainTriggeredFields());
+      }
+      var uniqueFields = [];
+      $.each(triggeredFields, function(i, el){
+          if($.inArray(el, uniqueFields) === -1) uniqueFields.push(el);
+      });
+      
+      this.delegate.MMapOpenFields(cellsToOpen,uniqueFields);
+    }
+    function flagField(x,y) {
+      if(!this.started) return;
+      var mField = this.cells[y][x];
+      if(mField.isOpened) return;
+      mField.isFlagged = !mField.isFlagged;
+      this.delegate.MMapFieldFlagged(mField);
+      if(mField.isFlagged) --this.flagsLeft;
+      else ++this.flagsLeft;
+      this.delegate.MMapFlagAmountChanged(this.flagsLeft);
 
-  MMap.prototype.secondsPassed = function(){
-  	if(!this.startTime || this.startTime === 0) return 0;
+      if(Globals.currentClient.assistLevel >= 1){
+        var triggeredFields = new Array();
+        for(var i=mField.neighbors.length-1; i>=0; --i){
+          var f = mField.neighbors[i];
+          if(f.isOpened){
+            f.refreshFlaggedAround();
+            if(mField.flaggedAround === mField.minesAround){
+              triggeredFields = triggeredFields.concat(f.getChainTriggeredFields());
+            }
+          }
+        }
+        if(triggeredFields.length>0) this.openFields(triggeredFields);
+      }
+    }
+    function openMinesAroundOpenField(x,y) { /** TODO: change to 'field' for a consistent API **/
+      var mField = this.cells[y][x];
+      if(!mField.isOpened) return;
 
-  	var milliPassed = (new Date).getTime() - this.startTime;
-  	return Math.floor(milliPassed / 1000);
-  }
+      mField.refreshFlaggedAround();    
+      if(mField.flaggedAround === mField.minesAround){
+        // Open them all
+        var cellsToOpen = mField.getChainTriggeredFields();
+        this.openFields(cellsToOpen);
+      }
+    }
+
+    return function(){
+      this.openField = openField;
+      this.openFields = openFields;
+      this.flagField = flagField;
+      this.openMinesAroundOpenField = openMinesAroundOpenField;
+      return this;
+    }
+  })();
+
+  MClientInterfaceMethods.call(MMap.prototype);
 
   return MMap;
 });

@@ -1,5 +1,5 @@
 define(['globals'], function(Globals){
-  //'use strict';
+  'use strict';
   
   var MCell = function(x,y){
     this.x = x;

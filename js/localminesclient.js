@@ -42,7 +42,7 @@ define(['minesclient','map/mmap'], function(MinesClient, MMap){
 
   var GUIActionFunctions = (function(){
     function clickedAtField(x,y) {
-      this.mMap.clickedAtField(x,y);
+      this.mMap.openField(this.mMap.cells[y][x]);
     }
     function flagField(x,y) {
       this.mMap.flagField(x,y);
@@ -53,15 +53,11 @@ define(['minesclient','map/mmap'], function(MinesClient, MMap){
     function openFields(fieldsToOpen) {
       this.mMap.openFields(fieldsToOpen);
     }
-    function secondsPassed() {
-      return this.mMap.secondsPassed();
-    }
     return function(){
       this.clickedAtField = clickedAtField;
       this.flagField = flagField;
       this.openMinesAroundOpenField = openMinesAroundOpenField;
       this.openFields = openFields;
-      this.secondsPassed = secondsPassed;
       return this;
     }
   })();

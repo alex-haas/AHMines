@@ -190,7 +190,7 @@ define(['globals'], function (Globals) {
 	};
 
 	MGUI.prototype.timerUpdate = function(){
-  	var secondsPassed = Globals.currentClient.secondsPassed();
+  	var secondsPassed = Globals.currentClient.getSecondsPassed();
 
   	var seconds = secondsPassed % 60;
 		var minutes = Math.floor(secondsPassed / 60);
