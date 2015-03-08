@@ -72,9 +72,21 @@ define(['globals'], function (Globals) {
 
 	/** Client Callbacks **/
   var MClientCallbackFunctions = (function() {
-    function onOpenFieldListener(fieldsToOpen, fieldsToOpenNext){
-      console.log('fields got opened');
-      // TODO: check whether this method is ever called or needed
+    function onOpenFieldListener(fieldsToOpen, fieldsToOpenNext) {
+      for(var i=fieldsToOpen.length-1; i>=0; --i){
+        var mField = fieldsToOpen[i];
+        var div = this.getFieldOnPosition(mField.x, mField.y);
+        div.addClass('mopen');
+        if(mField.isMine) div.addClass("mmine");
+        else if(mField.isFlag) alert("shouldn't be called here oO");
+        else div.addClass('m' + mField.minesAround);
+      }
+
+      if(fieldsToOpenNext.length > 0){
+        window.setTimeout(function(){
+          Globals.currentClient.openFields(fieldsToOpenNext);
+        },200);
+      }
     }
     function onFlagFieldListener(fieldToFlag) {
       console.log('field got flagged'+fieldToFlag);
@@ -110,84 +122,81 @@ define(['globals'], function (Globals) {
     }
   })();
 
-  HTMLRenderingFunctions.call(MGUI.prototype);
-  MClientCallbackFunctions.call(MGUI.prototype);
-
-  /** HTML Controls **/
-
-  MGUI.prototype.setControlListener = function() {
-  	$('#assist-level-selector').change(this.setChangeAssistLevelListener);
-  };
-
-  MGUI.prototype.setChangeAssistLevelListener = function() {
-  	var newSelectedLevel = parseInt($('#assist-level-selector option:selected').attr('value'));
-  	Globals.currentClient.assistLevel = newSelectedLevel;
-  };
-
-	MGUI.prototype.getFieldOnPosition = function(x,y) {
-		var row = $('#' + y + '.mrow');
-		return $('#' + x + '.mfield', row);
-	};
-
-	MGUI.prototype.onOpenFieldListener = function(fieldsToOpen, fieldsToOpenNext){
-		for(var i=fieldsToOpen.length-1; i>=0; --i){
-			var mField = fieldsToOpen[i];
-			var div = this.getFieldOnPosition(mField.x, mField.y);
-			div.addClass('mopen');
-			if(mField.isMine) div.addClass("mmine");
-			else if(mField.isFlag) alert("shouldn't be called here oO");
-			else div.addClass('m' + mField.minesAround);
-		}
-
-    if(fieldsToOpenNext.length > 0){
-      window.setTimeout(function(){
-        Globals.currentClient.openFields(fieldsToOpenNext);
-      },200);
+  var MinesGUIClientUtilFunctions = (function(){
+    function getFieldOnPosition(x,y) {
+      var row = $('#' + y + '.mrow');
+      return $('#' + x + '.mfield', row);
     }
-	};
+    return function(){
+      this.getFieldOnPosition = getFieldOnPosition;
+      return this;
+    }
+  })(); 
 
-	MGUI.prototype.onFieldClickListener = function(event){
-		var button = event.target;
-		var mFieldX = parseInt(button.getAttribute("mfieldx"));
-		var mFieldY = parseInt(button.getAttribute("mfieldy"));
+  var HTMLListenerFunctions = (function(){
+    function setControlListener() {
+      $('#assist-level-selector').change(this.setChangeAssistLevelListener);
+    }
+    function setChangeAssistLevelListener() {
+      var newSelectedLevel = parseInt($('#assist-level-selector option:selected').attr('value'));
+      Globals.currentClient.assistLevel = newSelectedLevel;
+    }
+    function onFieldClickListener(event) {
+      var button = event.target;
+      var mFieldX = parseInt(button.getAttribute('mfieldx'));
+      var mFieldY = parseInt(button.getAttribute('mfieldy'));
 
-    console.log('GUI: left click on Cell[X:'+mFieldX+', Y:'+mFieldY+']');
-		Globals.currentClient.clickedAtField(mFieldX,mFieldY);
-	};
+      console.log('GUI: left click on Cell[X:'+mFieldX+', Y:'+mFieldY+']');
+      Globals.currentClient.clickedAtField(mFieldX,mFieldY);
+    }
+    function onRightClickListener(event) {
+      event.preventDefault();
 
-	MGUI.prototype.onRightClickListener = function(event){
-		event.preventDefault();
+      var button = event.target;
+      var mFieldX = parseInt(button.getAttribute('mfieldx'));
+      var mFieldY = parseInt(button.getAttribute('mfieldy'));
 
-		var button = event.target;
-		var mFieldX = parseInt(button.getAttribute("mfieldx"));
-		var mFieldY = parseInt(button.getAttribute("mfieldy"));
+      console.log('GUI: right click on Cell[X:' + mFieldX + ', Y:' + mFieldY + ']');
+      Globals.currentClient.flagField(mFieldX,mFieldY);
+    }
+    function onDoubleClickListener(event) {
+      var button = event.target;
+      var mFieldX = parseInt(button.getAttribute('mfieldx'));
+      var mFieldY = parseInt(button.getAttribute('mfieldy'));
+      Globals.currentClient.openMinesAroundOpenField(mFieldX,mFieldY);
+    }
+    function onDoubleClickListener(event) {
+      var button = event.target;
+      var mFieldX = parseInt(button.getAttribute('mfieldx'));
+      var mFieldY = parseInt(button.getAttribute('mfieldy'));
+      Globals.currentClient.openMinesAroundOpenField(mFieldX,mFieldY);
+    }
+    function setOnFieldClickListener() {
+      var jFields = $('.mfield');
+      
+      // Left click
+      jFields.unbind('click');
+      jFields.click(this.onFieldClickListener);
+      
+      // Right click
+      jFields.unbind('contextmenu');
+      jFields.bind('contextmenu', this.onRightClickListener);
 
-    console.log('GUI: right click on Cell[X:'+mFieldX+', Y:'+mFieldY+']');
-		Globals.currentClient.flagField(mFieldX,mFieldY);
-	};
-
-	MGUI.prototype.onDoubleClickListener = function(event){
-		var button = event.target;
-		var mFieldX = parseInt(button.getAttribute("mfieldx"));
-		var mFieldY = parseInt(button.getAttribute("mfieldy"));
-		Globals.currentClient.openMinesAroundOpenField(mFieldX,mFieldY);
-	};
-
-	MGUI.prototype.setOnFieldClickListener = function(){
-		var jFields = $('.mfield');
-		
-		// Left click
-		jFields.unbind("click");
-		jFields.click(this.onFieldClickListener);
-		
-		// Right click
-		jFields.unbind("contextmenu");
-		jFields.bind("contextmenu", this.onRightClickListener);
-
-		// Double click
-		jFields.unbind("dblclick");
-		jFields.dblclick(this.onDoubleClickListener);
-	};
+      // Double click
+      jFields.unbind('dblclick');
+      jFields.dblclick(this.onDoubleClickListener);
+    }
+    return function(){
+      this.setControlListener = setControlListener;
+      this.setChangeAssistLevelListener = setChangeAssistLevelListener;
+      this.onFieldClickListener = onFieldClickListener;
+      this.onRightClickListener = onRightClickListener;
+      this.onDoubleClickListener = onDoubleClickListener;
+      this.onDoubleClickListener = onDoubleClickListener;
+      this.setOnFieldClickListener = setOnFieldClickListener;
+      return this;
+    }
+  })();
 
 	MGUI.prototype.timerUpdate = function(){
   	var secondsPassed = Globals.currentClient.getSecondsPassed();
@@ -199,6 +208,11 @@ define(['globals'], function (Globals) {
 
   	setTimeout(this.timerUpdate, 1000);
   }
+
+  HTMLRenderingFunctions.call(MGUI.prototype);
+  MClientCallbackFunctions.call(MGUI.prototype);
+  MinesGUIClientUtilFunctions.call(MGUI.prototype);
+  HTMLListenerFunctions.call(MGUI.prototype);
 
   return MGUI;
 });

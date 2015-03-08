@@ -32,10 +32,18 @@ define(['minesclient','map/mmap'], function(MinesClient, MMap){
     function MMapFlagAmountChanged(newAmount) {
       this.delegate.onFlagAmountChanged(newAmount);
     }
+    function MMapPlayerWon() {
+      this.delegate.onWin();
+    }
+    function MMapPlayerLost() {
+      this.delegate.onLose();
+    }
     return function(){
       this.MMapOpenFields = MMapOpenFields;
       this.MMapFieldFlagged = MMapFieldFlagged;
       this.MMapFlagAmountChanged = MMapFlagAmountChanged;
+      this.MMapPlayerWon = MMapPlayerWon;
+      this.MMapPlayerLost = MMapPlayerLost;
       return this;
     }
   })();

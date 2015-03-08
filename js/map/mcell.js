@@ -13,7 +13,8 @@ define(['globals'], function(Globals){
     this.closedAround = 0,
     this.neighbors = [],
     this.delegate = {
-      clickedOnMine: function(x,y){}
+      clickedOnMine: function(field){},
+      openedField: function(field){}
     }
   };
 
@@ -28,8 +29,10 @@ define(['globals'], function(Globals){
       this.refreshFlaggedAround();
       
       if(this.isMine){
-        this.delegate.clickedOnMine();
+        this.delegate.clickedOnMine(this);
       }
+
+      this.delegate.openedField(this);
 
       return true;
     }

@@ -11,16 +11,21 @@ define(['map/mcell','globals'], function(MCell, Globals){
     if(rows<=0 || cols<=0) throw "rows or cols zero or negative";
     if(cols*rows-9 < mines) throw "too many mines";
 
+    var y,x,row,cell;
+
     this.rows = rows;
     this.cols = cols;
     this.mines = mines;
     this.flagsLeft = mines;
+    this.openCountForWin = cols * rows - mines;
 
     // Create all Cells
-    for(var y=0; y<rows; y++){
-      var row = [];
-      for(var x=0; x<cols; x++){
-        row.push(new MCell(x,y));
+    for(y=0; y<rows; y++){
+      row = [];
+      for(x=0; x<cols; x++){
+        cell = new MCell(x,y);
+        cell.delegate = this;
+        row.push(cell);
       }
       this.cells.push(row);
     }
@@ -45,7 +50,9 @@ define(['map/mcell','globals'], function(MCell, Globals){
     delegate: {
       MMapOpenFields: function(cellsToOpen, TriggeredCells){},
       MMapFieldFlagged: function(field){},
-      MMapFlagAmountChanged: function(newAmount){}
+      MMapFlagAmountChanged: function(newAmount){},
+      MMapPlayerWon: function(){},
+      MMapPlayerLost: function(){}
     },
 
     /* attributes */
@@ -55,7 +62,9 @@ define(['map/mcell','globals'], function(MCell, Globals){
     cells: [],
     started: false,
     flagsLeft: 0,
-    lost: false
+    lost: false,
+    opened: 0,
+    openCountForWin: 0
   }
 
   MMap.prototype.constructor = MMap;
@@ -94,8 +103,10 @@ define(['map/mcell','globals'], function(MCell, Globals){
     function openFields(cellsToOpen) {
       var triggeredFields = [];
       for(var i=cellsToOpen.length-1; i>=0; --i){
-        cellsToOpen[i].open();
-        triggeredFields = triggeredFields.concat(cellsToOpen[i].getChainTriggeredFields());
+        if(cellsToOpen[i].open()){
+          this.openFields
+          triggeredFields = triggeredFields.concat(cellsToOpen[i].getChainTriggeredFields());
+        }
       }
       var uniqueFields = [];
       $.each(triggeredFields, function(i, el){
@@ -149,7 +160,26 @@ define(['map/mcell','globals'], function(MCell, Globals){
     }
   })();
 
+  var MCellDelegateFunctions = (function(){
+    function clickedOnMine() {
+      this.lost = true;
+      this.delegate.MMapPlayerLost();
+    }
+    function openedField() {
+      this.opened++;
+      if(this.opened >= this.openCountForWin && !this.lost) {
+        this.delegate.MMapPlayerWon();
+      }
+    }
+    return function(){
+      this.clickedOnMine = clickedOnMine;
+      this.openedField = openedField;
+      return this;
+    }
+  })();
+
   MClientInterfaceMethods.call(MMap.prototype);
+  MCellDelegateFunctions.call(MMap.prototype);
 
   return MMap;
 });

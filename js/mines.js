@@ -10,9 +10,9 @@ define(['globals','localminesclient','minesgui'], function(Globals, LocalMinesCl
   Globals.currentClient = new LocalMinesClient;
   Globals.gui = new MinesGUI;
 
-  var cols = 30;
+  var cols = 16;
   var rows = 16;
-  var mines = 99;
+  var mines = 16;
 
   Globals.currentClient.init(cols,rows,mines);
   Globals.currentClient.assistLevel = 999;
