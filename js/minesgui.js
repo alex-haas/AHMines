@@ -16,99 +16,115 @@ define(['globals'], function (Globals) {
   	window.setTimeout(this.setControlListener.bind(this), 0);
   	window.setTimeout(this.timerUpdate.bind(this), 0);
   }
-
   MGUI.prototype.constructor = MGUI;
 
-  /** HTML rendering **/
-
-  MGUI.prototype.renderHTML = function(){
-    var htmlControls = this.renderHTMLControls();
-    var htmlFields = this.renderHTMLFields();
-    return htmlControls + htmlFields;
-  };
-
-  MGUI.prototype.renderHTMLControls = function(){
-    var html = '<div class="controls">';
-
-    html += this.renderHTMLControlLevelSelector();
-    html += '<div class="spacer"></div>';
-    html += '<div class="mtimeicon"></div><div id="mtime-counter" class="miconlabel">0:00</div>';
-    html += '<div class="spacer"></div>';
-    html += '<div class="mmineicon"></div><div id="mmine-counter" class="miconlabel">99</div>';
-
-    html += '<div style="clear:both"></div></div>';
-    return html;
-  };
-
-  MGUI.prototype.renderHTMLControlLevelSelector = function(){
-  	var maxLevel = 5;
-    var html = '<select id="assist-level-selector" style="float:left">';
-    for(var i=0; i<=maxLevel; ++i){
-      html += '<option value="' + i + '"'+(i===maxLevel?' selected':'')+'>Assist Level ' + i + '</option>';
+  var HTMLRenderingFunctions = (function(){
+    function renderHTML() {
+      var htmlControls = this.renderHTMLControls();
+      var htmlFields = this.renderHTMLFields();
+      return htmlControls + htmlFields;
     }
-    html += '</select>';
-    return html;
-  };
+    function renderHTMLControls() {
+      var html = '<div class="controls">';
 
-  MGUI.prototype.renderHTMLFields = function(){
-		var rows = Globals.currentClient.mMap.rows;
-		var cols = Globals.currentClient.mMap.cols;
+      html += this.renderHTMLControlLevelSelector();
+      html += '<div class="spacer"></div>';
+      html += '<div class="mtimeicon"></div><div id="mtime-counter" class="miconlabel">0:00</div>';
+      html += '<div class="spacer"></div>';
+      html += '<div class="mmineicon"></div><div id="mmine-counter" class="miconlabel">99</div>';
 
-		var htmlmap = '<div class="mmap">';
-		var i=0;
-		for(var y=0; y<rows; y++){
-			htmlmap += '<div id="' + y + '" class="mrow">';
-			for(var x=0; x<cols; ++x, ++i){
-				htmlmap += '<div id="' + x + '" class="mfield" mfieldx="' + x + '" mfieldy="' + y + '"></div>';
-			}
-			htmlmap += '</div><div style="clear:both"></div>';
-		}
-		htmlmap += '</div>';
-		return htmlmap;
-	};
+      html += '<div style="clear:both"></div></div>';
+      return html;
+    }
+    function renderHTMLControlLevelSelector() {
+      var maxLevel = 5;
+      var html = '<select id="assist-level-selector" style="float:left">';
+      for(var i=0; i<=maxLevel; ++i){
+        html += '<option value="' + i + '"'+(i===maxLevel?' selected':'')+'>Assist Level ' + i + '</option>';
+      }
+      html += '</select>';
+      return html;
+    }
+    function renderHTMLFields() {
+      var rows = Globals.currentClient.mMap.rows;
+      var cols = Globals.currentClient.mMap.cols;
+
+      var htmlmap = '<div class="mmap">';
+      var i=0;
+      for(var y=0; y<rows; y++){
+        htmlmap += '<div id="' + y + '" class="mrow">';
+        for(var x=0; x<cols; ++x, ++i){
+          htmlmap += '<div id="' + x + '" class="mfield" mfieldx="' + x + '" mfieldy="' + y + '"></div>';
+        }
+        htmlmap += '</div><div style="clear:both"></div>';
+      }
+      htmlmap += '</div>';
+      return htmlmap;
+    }
+    return function() {
+      this.renderHTML = renderHTML;
+      this.renderHTMLControls = renderHTMLControls;
+      this.renderHTMLControlLevelSelector = renderHTMLControlLevelSelector;
+      this.renderHTMLFields = renderHTMLFields;
+      return this;
+    }
+  })();
 
 	/** Client Callbacks **/
-
-  	MGUI.prototype.onOpenFieldListener = function(fieldsToOpen, fieldsToOpenNext){
+  var MClientCallbackFunctions = (function() {
+    function onOpenFieldListener(fieldsToOpen, fieldsToOpenNext){
       console.log('fields got opened');
-  		var div = this.getFieldOnPosition(fieldToFlag.x, fieldToFlag.y);
-	  	if(fieldToFlag.isFlagged) div.addClass("mflag");
-	  	else div.removeClass("mflag");
-  	};
-    MGUI.prototype.onFlagFieldListener = function(fieldToFlag){
+      // TODO: check whether this method is ever called or needed
+    }
+    function onFlagFieldListener(fieldToFlag) {
       console.log('field got flagged'+fieldToFlag);
-    };
-    MGUI.prototype.onLose = function(){
+      var div = this.getFieldOnPosition(fieldToFlag.x, fieldToFlag.y);
+      if(fieldToFlag.isFlagged) div.addClass('mflag');
+      else div.removeClass('mflag');
+    }
+    function onLose() {
       console.log('player lost');
-    	alert("you lose!");
-    };
-    MGUI.prototype.onWin = function(){
+      alert("you lose!");
+    }
+    function onWin() {
       console.log('player won');
-    	alert("gratulations! you win!");
-    };
-    MGUI.prototype.onReset = function(){
+      alert("gratulations! you win!");
+    }
+    function onReset() {
       console.log('reset was executed');
-    };
-    MGUI.prototype.onFlagAmountChanged = function(flagsLeft){
+    }
+    function onFlagAmountChanged(flagsLeft) {
       console.log('amount of flags changed to: '+flagsLeft);
 
-    	// TODO: getting the elements should ne done in an init method
-    	document.getElementById('mmine-counter').innerHTML = flagsLeft;
-    };
-  
+      // TODO: getting the elements should ne done in an init method
+      document.getElementById('mmine-counter').innerHTML = flagsLeft;
+    }
+    return function() {
+      this.onOpenFieldListener = onOpenFieldListener;
+      this.onFlagFieldListener = onFlagFieldListener;
+      this.onLose = onLose;
+      this.onWin = onWin;
+      this.onReset = onReset;
+      this.onFlagAmountChanged = onFlagAmountChanged;
+      return this;
+    }
+  })();
+
+  HTMLRenderingFunctions.call(MGUI.prototype);
+  MClientCallbackFunctions.call(MGUI.prototype);
 
   /** HTML Controls **/
 
-  MGUI.prototype.setControlListener = function(){
-  	$("#assist-level-selector").change(this.setChangeAssistLevelListener);
+  MGUI.prototype.setControlListener = function() {
+  	$('#assist-level-selector').change(this.setChangeAssistLevelListener);
   };
 
-  MGUI.prototype.setChangeAssistLevelListener = function(){
-  	var newSelectedLevel = parseFloat($("#assist-level-selector option:selected").attr('value'));
+  MGUI.prototype.setChangeAssistLevelListener = function() {
+  	var newSelectedLevel = parseInt($('#assist-level-selector option:selected').attr('value'));
   	Globals.currentClient.assistLevel = newSelectedLevel;
   };
 
-	MGUI.prototype.getFieldOnPosition = function(x,y){
+	MGUI.prototype.getFieldOnPosition = function(x,y) {
 		var row = $('#' + y + '.mrow');
 		return $('#' + x + '.mfield', row);
 	};

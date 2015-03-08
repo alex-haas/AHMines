@@ -55,7 +55,8 @@ define(['map/mcell','globals'], function(MCell, Globals){
     cells: [],
     started: false,
     flagsLeft: 0,
-    lost: false
+    lost: false,
+    startTime: 0
   }
 
   MMap.prototype.constructor = MMap;
@@ -143,7 +144,7 @@ define(['map/mcell','globals'], function(MCell, Globals){
   };
 
   MMap.prototype.secondsPassed = function(){
-  	if(this.startTime === 0) return 0;
+  	if(!this.startTime || this.startTime === 0) return 0;
 
   	var milliPassed = (new Date).getTime() - this.startTime;
   	return Math.floor(milliPassed / 1000);
