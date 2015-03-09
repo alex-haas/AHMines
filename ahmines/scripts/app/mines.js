@@ -1,8 +1,9 @@
 'use strict';
 
 requirejs.config({
-  baseUrl: 'scripts',
+  baseUrl: 'scripts/app',
   paths: {
+    jquery: '../libs/jquery-2.1.1.min'
   }
 });
 

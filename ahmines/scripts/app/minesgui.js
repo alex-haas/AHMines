@@ -1,4 +1,4 @@
-define(['globals'], function (Globals) {
+define(['globals','jquery'], function (Globals,$) {
   'use strict';
 
   var MGUI = function(){};
