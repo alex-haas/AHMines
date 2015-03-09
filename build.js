@@ -1,12 +1,12 @@
 ({
-  baseUrl: 'js',
-  include: ['libs/almond', 'mines'],
-  wrap: false,
+  appDir: './ahmines',
+  baseUrl: './scripts/app',
+  name: 'libs/almond',
+  include: ['mines'],
+  wrap: true,
   out: 'build/mines.js',
   paths: {
-    jquery: 'libs/jquery',
-    cs: 'libs/cs',
-    'coffee-script': 'libs/coffee-script',
-    text: 'libs/text'
-  }
+    jquery: '../libs/jquery.min'
+  },
+  removeCombined: true
 })

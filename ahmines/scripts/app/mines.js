@@ -1,13 +1,16 @@
 'use strict';
 
 requirejs.config({
+  baseUrl: 'scripts',
+  paths: {
+  }
 });
 
 define(['globals','localminesclient','minesgui'], function(Globals, LocalMinesClient, MinesGUI) {
   Globals.currentClient = new LocalMinesClient;
   Globals.gui = new MinesGUI;
 
-  $( document ).ready(function() {
+  $(document).ready(function() {
     var cols = 16;
     var rows = 16;
     var mines = 16;
