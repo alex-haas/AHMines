@@ -95,12 +95,14 @@ define(['globals'], function (Globals) {
       else div.removeClass('mflag');
     }
     function onLose() {
-      console.log('player lost');
-      alert("you lose!");
+      window.setTimeout(function(){
+        alert("you lose!");
+      },0); 
     }
     function onWin() {
-      console.log('player won');
-      alert("gratulations! you win!");
+      window.setTimeout(function(){
+        alert("gratulations! you win!");
+      },0);
     }
     function onReset() {
       console.log('reset was executed');
