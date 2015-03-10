@@ -39,11 +39,40 @@ module.exports = function(grunt) {
     requirejs: {
       compile: {
         options: {
+          findNestedDependencies: true,
           baseUrl: "ahmines/scripts/app",
+          optimize: 'none',
           mainConfigFile: "ahmines/scripts/app/mines.js",
           include: "mines",
-          name: "../libs/almond",
-          out: "dist/<%= pkg.name %>.js"
+          out: "dist/<%= pkg.name %>.js",
+          onModuleBundleComplete: function (data) {
+            var fs = require('fs'),
+              amdclean = require('amdclean'),
+              outputFile = data.path;
+
+            fs.writeFileSync(outputFile, amdclean.clean({
+              'filePath': outputFile
+            }));
+          }
+        }
+      },
+      compileForProduction: {
+        options: {
+          findNestedDependencies: true,
+          baseUrl: "ahmines/scripts/app",
+          optimize: 'uglify2',
+          mainConfigFile: "ahmines/scripts/app/mines.js",
+          include: "mines",
+          out: "dist/<%= pkg.name %>.js",
+          onModuleBundleComplete: function (data) {
+            var fs = require('fs'),
+              amdclean = require('amdclean'),
+              outputFile = data.path;
+
+            fs.writeFileSync(outputFile, amdclean.clean({
+              'filePath': outputFile
+            }));
+          }
         }
       }
     },
@@ -64,7 +93,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('old_default', ['jshint', 'qunit', 'concat', 'uglify']);
 
-  grunt.registerTask('default', ['requirejs']);
+  grunt.registerTask('default', ['requirejs:compile']);
 };
 
 

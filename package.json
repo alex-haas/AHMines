@@ -2,6 +2,7 @@
   "name": "ahmines",
   "version": "0.1.0",
   "devDependencies": {
+    "amdclean": "^2.4.0",
     "grunt": "~0.4.5",
     "grunt-contrib-concat": "^0.5.1",
     "grunt-contrib-jshint": "~0.10.0",

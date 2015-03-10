@@ -1,4 +1,4 @@
-define(['globals','jquery'], function (Globals,$) {
+define(['globals'], function (Globals) {
   'use strict';
 
   var MGUI = function(){};
@@ -12,9 +12,9 @@ define(['globals','jquery'], function (Globals,$) {
   	}
   	this.minescontainer.innerHTML = this.renderHTML();
 
-  	window.setTimeout(this.setOnFieldClickListener.bind(this), 0);
-  	window.setTimeout(this.setControlListener.bind(this), 0);
-  	window.setTimeout(this.timerUpdate.bind(this), 0);
+  	window.setTimeout(this.setOnFieldClickListener.bind(this), 2000);
+  	window.setTimeout(this.setControlListener.bind(this), 2000);
+  	window.setTimeout(this.timerUpdate.bind(this), 2000);
   }
   MGUI.prototype.constructor = MGUI;
 
@@ -216,7 +216,7 @@ define(['globals','jquery'], function (Globals,$) {
 		var secondsStr = seconds < 10 ? '0'+seconds : seconds;
 		$('#mtime-counter').html(minutes + ':' + secondsStr);
 
-  	setTimeout(this.timerUpdate, 1000);
+  	window.setTimeout(this.timerUpdate, 1000);
   }
 
   HTMLRenderingFunctions.call(MGUI.prototype);

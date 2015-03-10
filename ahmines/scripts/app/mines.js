@@ -1,12 +1,5 @@
 'use strict';
 
-requirejs.config({
-  baseUrl: 'scripts/app',
-  paths: {
-    jquery: '../libs/jquery-2.1.1.min'
-  }
-});
-
 define(['globals','localminesclient','minesgui'], function(Globals, LocalMinesClient, MinesGUI) {
   Globals.currentClient = new LocalMinesClient;
   Globals.gui = new MinesGUI;
