@@ -94,6 +94,38 @@ module.exports = function(grunt) {
             }
         }
     },
+    copy: {
+      jslibs: {
+        files: [
+          {
+            expand: true, 
+            flatten: true,
+            src: 'ahmines/scripts/libs/jquery*.js', 
+            dest: 'dist/scripts/libs/'
+          }
+        ]
+      },
+      images: {
+        files: [
+          {
+            expand: true,
+            flatten: true,
+            src: 'ahmines/images/*',
+            dest: 'dist/images/'
+          }
+        ]
+      }
+    },
+    sass: {
+      dist: {
+        options: {
+          style: 'expanded'
+        },
+        files: {
+          'dist/css/ahmines.css': 'ahmines/css/ahmines.scss',       // 'destination': 'source'
+        }
+      }
+    },
     watch: {
       files: ['<%= jshint.files %>'],
       tasks: ['jshint', 'qunit']
@@ -108,11 +140,13 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-requirejs');
   grunt.loadNpmTasks('grunt-processhtml');
   grunt.loadNpmTasks('grunt-serve');
+  grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-sass');
 
   grunt.registerTask('test', ['jshint', 'qunit']);
   grunt.registerTask('old_default', ['jshint', 'qunit', 'concat', 'uglify']);
   grunt.registerTask('default', ['requirejs:compile']);
-  grunt.registerTask('production', ['requirejs:compileForProduction','processhtml:build']);
+  grunt.registerTask('production', ['requirejs:compileForProduction','processhtml:build','sass:dist','copy']);
 };
 
 
