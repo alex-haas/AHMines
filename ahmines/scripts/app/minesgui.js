@@ -52,9 +52,9 @@ define(['globals','jquery'], function (Globals,$) {
       var htmlmap = '<div class="mmap">';
       var i=0;
       for(var y=0; y<rows; y++){
-        htmlmap += '<div id="' + y + '" class="mrow">';
+        htmlmap += '<div id="mrow' + y + '" class="mrow">';
         for(var x=0; x<cols; ++x, ++i){
-          htmlmap += '<div id="' + x + '" class="mfield" mfieldx="' + x + '" mfieldy="' + y + '"></div>';
+          htmlmap += '<div class="mfield" mfieldx="' + x + '" mfieldy="' + y + '"></div>';
         }
         htmlmap += '</div><div style="clear:both"></div>';
       }
@@ -72,14 +72,20 @@ define(['globals','jquery'], function (Globals,$) {
 
 	/** Client Callbacks **/
   var MClientCallbackFunctions = (function() {
+    function addClass(elem, c) {
+      elem.className += ' '+c;
+    }
+    function removeClass(elem, c) {
+      elem.className.replace(c, '');
+    }
     function onOpenFieldListener(fieldsToOpen, fieldsToOpenNext) {
       for(var i=fieldsToOpen.length-1; i>=0; --i){
         var mField = fieldsToOpen[i];
         var div = this.getFieldOnPosition(mField.x, mField.y);
-        div.addClass('mopen');
-        if(mField.isMine) div.addClass("mmine");
+        addClass(div,'mopen');
+        if(mField.isMine) addClass(div, 'mmine');
         else if(mField.isFlag) alert("shouldn't be called here oO");
-        else div.addClass('m' + mField.minesAround);
+        else addClass(div, 'm' + mField.minesAround);
       }
 
       if(fieldsToOpenNext.length > 0){
@@ -91,8 +97,8 @@ define(['globals','jquery'], function (Globals,$) {
     function onFlagFieldListener(fieldToFlag) {
       console.log('field got flagged'+fieldToFlag);
       var div = this.getFieldOnPosition(fieldToFlag.x, fieldToFlag.y);
-      if(fieldToFlag.isFlagged) div.addClass('mflag');
-      else div.removeClass('mflag');
+      if(fieldToFlag.isFlagged) addClass(div,'mflag');
+      else removeClass(div,'mflag');
     }
     function onLose() {
       window.setTimeout(function(){
@@ -126,8 +132,8 @@ define(['globals','jquery'], function (Globals,$) {
 
   var MinesGUIClientUtilFunctions = (function(){
     function getFieldOnPosition(x,y) {
-      var row = $('#' + y + '.mrow');
-      return $('#' + x + '.mfield', row);
+      var row = document.getElementById('mrow'+y);
+      return row.children[x];
     }
     return function(){
       this.getFieldOnPosition = getFieldOnPosition;
@@ -137,10 +143,12 @@ define(['globals','jquery'], function (Globals,$) {
 
   var HTMLListenerFunctions = (function(){
     function setControlListener() {
-      $('#assist-level-selector').change(this.setChangeAssistLevelListener);
+      var assistLevelControl = document.getElementById('assist-level-selector');
+      assistLevelControl.onchange = this.setChangeAssistLevelListener;
     }
     function setChangeAssistLevelListener() {
-      var newSelectedLevel = parseInt($('#assist-level-selector option:selected').attr('value'));
+      var assistLevelControl = document.getElementById('assist-level-selector');
+      var newSelectedLevel = parseInt(e.options[e.selectedIndex].value);
       Globals.currentClient.assistLevel = newSelectedLevel;
     }
     function onFieldClickListener(event) {
