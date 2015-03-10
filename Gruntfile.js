@@ -63,7 +63,7 @@ module.exports = function(grunt) {
           optimize: 'uglify2',
           mainConfigFile: "ahmines/scripts/app/mines.js",
           include: "mines",
-          out: "dist/<%= pkg.name %>.js",
+          out: "dist/scripts/<%= pkg.name %>.min.js",
           onModuleBundleComplete: function (data) {
             var fs = require('fs'),
               amdclean = require('amdclean'),
@@ -73,6 +73,16 @@ module.exports = function(grunt) {
               'filePath': outputFile
             }));
           }
+        }
+      }
+    },
+    processhtml: {
+      build: {
+        options: {
+          process: true
+        },
+        files: {
+          'dist/index.html' : ['ahmines/index.html']
         }
       }
     },
@@ -88,12 +98,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-requirejs');
+  grunt.loadNpmTasks('grunt-processhtml');
 
   grunt.registerTask('test', ['jshint', 'qunit']);
-
   grunt.registerTask('old_default', ['jshint', 'qunit', 'concat', 'uglify']);
-
   grunt.registerTask('default', ['requirejs:compile']);
+  grunt.registerTask('production', ['requirejs:compileForProduction','processhtml:build']);
 };
 
 
