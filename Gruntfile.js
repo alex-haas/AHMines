@@ -86,6 +86,14 @@ module.exports = function(grunt) {
         }
       }
     },
+    serve: {
+        options: {
+            port: 9000,
+            serve: {
+              path: 'ahmines'
+            }
+        }
+    },
     watch: {
       files: ['<%= jshint.files %>'],
       tasks: ['jshint', 'qunit']
@@ -99,6 +107,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-requirejs');
   grunt.loadNpmTasks('grunt-processhtml');
+  grunt.loadNpmTasks('grunt-serve');
 
   grunt.registerTask('test', ['jshint', 'qunit']);
   grunt.registerTask('old_default', ['jshint', 'qunit', 'concat', 'uglify']);
