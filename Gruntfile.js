@@ -145,7 +145,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('test', ['jshint', 'qunit']);
   grunt.registerTask('old_default', ['jshint', 'qunit', 'concat', 'uglify']);
-  grunt.registerTask('default', ['requirejs:compile']);
+  grunt.registerTask('default', ['requirejs:compile','processhtml:build','sass:dist','copy','serve','watch']);
   grunt.registerTask('production', ['requirejs:compileForProduction','processhtml:build','sass:dist','copy']);
 };
 
